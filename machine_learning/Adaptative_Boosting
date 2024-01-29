@@ -1,0 +1,225 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_excel(r"D:\THB\Masterarbeit\scrapy_\immoscout\immoscout\dataset\5_Machine Learning\data.xlsx")
+
+# # Splitting the data into training and testing
+
+from sklearn.model_selection import train_test_split
+
+#Add the target
+X = df.drop(['price'], axis=1)
+y = df['price']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state=42)
+
+# # AdaBoost Training Set
+
+from sklearn.ensemble import AdaBoostRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
+import numpy as np
+from sklearn.datasets import make_regression
+
+# Step 1: Create an instance of AdaBoostRegressor and set hyperparameters
+adaboost_regressor = AdaBoostRegressor(loss = "exponential", n_estimators = 3799,
+                                       learning_rate = 0.0009348287881533538, random_state = 42)
+
+# Step 2: Fit the model to the training data
+adaboost_regressor.fit(X_train, y_train)
+
+# Step 3: Make predictions on the test data
+y_pred_training = adaboost_regressor.predict(X_train)
+
+#Results
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
+# Step 4: Evaluate the model's performance
+ab_r2_train = r2_score(y_train, y_pred_training)
+ab_mse_train = mean_squared_error(y_train, y_pred_training)
+ab_rmse_train = np.sqrt(ab_mse_train)
+ab_mae_train = mean_absolute_error(y_train, y_pred_training)
+
+# Print the results
+print("R-squared (R2):", ab_r2_train)
+print("Mean Squared Error (MSE):", ab_mse_train)
+print("Root Mean Squared Error (RMSE):", ab_rmse_train)
+print("Mean Absolute Error (MAE): ", ab_mae_train)
+
+import matplotlib.pyplot as plt
+
+# Plot the predicted vs actual values
+plt.scatter(y_train, y_pred_training, alpha=0.5)
+plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], color="red")
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.title("Predicted vs. Actual Values")
+plt.grid(True, linestyle='--', alpha=0.7)
+
+# Show the plot
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals and variance of residuals
+residuals = y_train - y_pred_training
+residual_variance = residuals**2
+
+# Create a scatter plot
+plt.scatter(y_train, residual_variance)
+plt.xlabel('Predicted Values')
+plt.ylabel('Variance of Residuals')
+plt.title('Variance of Residuals vs. Predicted Values')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals
+residuals = y_train - y_pred_training
+
+# Create a scatter plot
+plt.scatter(y_pred_training, residuals)
+plt.xlabel('Predicted Values (Million)')
+plt.ylabel('Residuals (Million)')
+plt.title('Residuals vs. Predicted Values in the Training Set')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.axhline(y=0, color='black', linestyle='--')  
+plt.show()
+
+# #Adaboost Test
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
+import numpy as np
+#Fit Regression Model
+
+# Step 3: Make predictions on the test data
+y_pred_test = adaboost_regressor.predict(X_test)
+
+#Results
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
+# Step 4: Evaluate the model's performance
+ab_r2_test = r2_score(y_test, y_pred_test)
+ab_mse_test = mean_squared_error(y_test, y_pred_test)
+ab_rmse_test = np.sqrt(ab_mse_test)
+ab_mae_test = mean_absolute_error(y_test, y_pred_test)
+
+# Print the results
+print("R-squared (R2):", ab_r2_test)
+print("Mean Squared Error (MSE):", ab_mse_test)
+print("Root Mean Squared Error (RMSE):", ab_rmse_test)
+print("Mean Absolute Error (MAE): ", ab_mae_test)
+
+import matplotlib.pyplot as plt
+
+# Assuming you already have X_test, y_test, and y_pred from your model
+# If not, make sure to replace them with the correct variables
+
+# Plot the predicted vs actual values
+plt.scatter(y_test, y_pred_test, alpha=0.5, color = 'mediumseagreen')
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color="red")
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.title("Predicted vs. Actual Values")
+plt.grid(True, linestyle='--', alpha=0.7)
+
+# Show the plot
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals and variance of residuals
+residuals = y_test - y_pred_test
+residual_variance = residuals**2
+
+# Create a scatter plot
+plt.scatter(y_test, residual_variance, color='mediumseagreen')
+plt.xlabel('Predicted Values')
+plt.ylabel('Variance of Residuals')
+plt.title('Variance of Residuals vs. Predicted Values')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals
+residuals = y_test - y_pred_test
+
+# Create a scatter plot
+plt.scatter(y_pred_test, residuals, color = 'mediumseagreen')
+plt.xlabel('Predicted Values (Million)')
+plt.ylabel('Residuals (Million)')
+plt.title('Residuals vs. Predicted Values in the Test Set')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.axhline(y=0, color='black', linestyle='--')  # Add horizontal line at y=0 for reference
+plt.show()
+
+# # Permutation Feature Importance
+
+
+from sklearn.inspection import permutation_importance
+r = permutation_importance(adaboost_regressor, X_test, y_test, 
+                           n_repeats=30,
+                           random_state=0)
+for i in r.importances_mean.argsort()[::-1]:
+
+        print(f"{X_test.columns[i]:<8}"
+              f"{r.importances_mean[i]:.3f}"
+              f" +/- {r.importances_std[i]:.3f}")
+
+import matplotlib.pyplot as plt
+
+# Extract the feature names, mean importances, and standard deviations
+feature_names = X_test.columns
+importances_mean = r.importances_mean
+importances_std = r.importances_std
+
+# Sort the features by mean importance in descending order
+sorted_indices = importances_mean.argsort()[::-1]
+
+# Create a bar plot
+plt.figure(figsize=(5, 5))
+plt.bar(range(len(feature_names)), importances_mean[sorted_indices], yerr=importances_std[sorted_indices], align='center')
+plt.xticks(range(len(feature_names)), [feature_names[i] for i in sorted_indices], rotation=90)
+#plt.xlabel('Feature')
+plt.ylabel('Permutation Importance')
+plt.title('PFI - AB')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.tight_layout()
+plt.show()
+
+# PDP
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Choose the feature of interest (e.g., 'area')
+feature_to_plot = 'area'
+
+# Generate a range of values for the feature
+feature_values = np.linspace(X_test[feature_to_plot].min(), X_test[feature_to_plot].max(), num=100)
+
+# Initialize an empty array to store the partial dependence values
+pdp_values = []
+
+# Iterate through feature values and calculate predictions
+for val in feature_values:
+    X_copy = X_test.copy()
+    X_copy[feature_to_plot] = val
+    predictions = adaboost_regressor.predict(X_copy)
+    # Adjust the predictions to be in 1e6 notation
+    pdp_values.append(predictions.mean() / 1e6)  # Expressed in Million
+
+# Plot the PDP with price in 1e6 notation
+plt.figure(figsize=(3, 5))
+plt.plot(feature_values, pdp_values, marker='o', linestyle='-')
+plt.title(f'PDP - AB - Area')
+plt.xlabel('Area')
+plt.ylabel('Price (Million)')  # Modify the y-axis label
+plt.grid(True)
+plt.show()
