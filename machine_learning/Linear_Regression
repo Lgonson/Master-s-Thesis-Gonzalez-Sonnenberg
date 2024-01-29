@@ -1,0 +1,298 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_excel(r"D:\THB\Masterarbeit\scrapy_\immoscout\immoscout\dataset\5_Machine Learning\data.xlsx")
+pd.options.display.float_format = "{:,.2f}".format
+
+# # Splitting the data into training and testing
+from sklearn.model_selection import train_test_split
+#Add the target
+X = df.drop(['price'], axis=1)
+y = df['price']
+X_train, X_test, y_train, y_test = \
+train_test_split(X, y, test_size = 0.25, random_state=42)
+#print out the shape of the training and testing set
+print(f"Shape X_train: {X_train.shape}, Shape y_train: {y_train.shape}")
+print(f"Shape X_test: {X_test.shape}, Shape y_test: {y_test.shape}")
+train_data = X_train.join(y_train)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+#Heat Map
+plt.figure(figsize=(15, 8))
+sns.heatmap(train_data.corr(), annot=True, fmt=".3f", cmap="Blues")
+plt.show()
+
+# Linear Regression Training set 
+
+#Trainingset
+
+from sklearn.linear_model import LinearRegression
+#Create a Linear Regression Model:
+
+lr = LinearRegression(fit_intercept = True, copy_X = False, n_jobs = 1974, positive = False)
+
+#Training the model on the training set
+lr.fit(X_train, y_train)
+
+y_train_predictions = lr.predict(X_train)
+
+# #Evaluate the training set
+
+#Conclusions:
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
+#Evaluate the performance of the model:
+lr_r2 = r2_score(y_train, y_train_predictions)
+print(f"R2 score: {lr_r2}")
+
+lr_mse = mean_squared_error(y_train, y_train_predictions)
+print(f"MSE score: {lr_mse}")
+
+lr_rmse = np.sqrt(lr_mse)
+print(f"RMSE score: {lr_rmse}")
+
+lr_mae = mean_absolute_error(y_train, y_train_predictions)
+print(f"MAE score: {lr_mae}")
+
+
+#MAE: Average absolute distance between the predicted and actual values.
+#Lower is better
+
+intercept = lr.intercept_
+print(f"Intercept: {intercept}")
+
+import matplotlib.pyplot as plt
+
+# Assuming you already have X_test, y_test, and y_pred from your model
+# If not, make sure to replace them with the correct variables
+
+# Plot the predicted vs actual values
+plt.scatter(y_train, y_train_predictions, alpha=0.5)
+plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], color="red")
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.title("Predicted vs. Actual Values")
+plt.grid(True, linestyle='--', alpha=0.7)
+
+# Show the plot
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals and variance of residuals
+residuals = y_train - y_train_predictions
+residual_variance = residuals**2
+
+# Create a scatter plot
+plt.scatter(y_train_predictions, residual_variance)
+plt.xlabel('Predicted Values')
+plt.ylabel('Variance of Residuals')
+plt.title('Variance of Residuals vs. Predicted Values')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals
+residuals = y_train - y_train_predictions
+
+# Create a scatter plot
+plt.scatter(y_train_predictions, residuals)
+plt.xlabel('Predicted Values')
+plt.ylabel('Residuals')
+plt.title('Residuals vs. Predicted Values')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.axhline(y=0, color='black', linestyle='--')  # Add horizontal line at y=0 for reference
+plt.show()
+
+# Linear Regression Test set
+
+from sklearn.linear_model import LinearRegression
+
+lr.fit(X_train, y_train)
+y_test_predictions = lr.predict(X_test)
+
+#Conclusions:
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
+#Evaluate the performance of the model:
+lr_r2 = r2_score(y_test, y_test_predictions)
+print(f"R2 score: {lr_r2}")
+
+lr_mse = mean_squared_error(y_test, y_test_predictions)
+print(f"MSE score: {lr_mse}")
+
+lr_rmse = np.sqrt(lr_mse)
+print(f"RMSE score: {lr_rmse}")
+
+lr_mae = mean_absolute_error(y_test, y_test_predictions)
+print(f"MAE score: {lr_mae}")
+
+intercept = lr.intercept_
+print(f"Intercept: {intercept}")
+
+import matplotlib.pyplot as plt
+
+# Assuming you already have X_test, y_test, and y_pred from your model
+# If not, make sure to replace them with the correct variables
+
+# Plot the predicted vs actual values
+plt.scatter(y_test, y_test_predictions, alpha = 0.5, color = 'mediumseagreen')
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color="red")
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.title("Predicted vs. Actual Values")
+plt.grid(True, linestyle='--', alpha=0.7)
+
+# Show the plot
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals and variance of residuals
+residuals = y_test - y_test_predictions
+residual_variance = residuals**2
+
+# Create a scatter plot
+plt.scatter(y_test_predictions, residual_variance, color = 'mediumseagreen')
+plt.xlabel('Predicted Values')
+plt.ylabel('Variance of Residuals')
+plt.title('Variance of Residuals vs. Predicted Values')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.show()
+
+import matplotlib.pyplot as plt
+
+# Calculate residuals
+residuals = y_test - y_test_predictions
+
+# Create a scatter plot
+plt.scatter(y_test_predictions, residuals, color = 'mediumseagreen')
+plt.xlabel('Predicted Values (Million)')
+plt.ylabel('Residuals (Million)')
+plt.title('Residuals vs. Predicted Values in the Test Set')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.axhline(y=0, color='black', linestyle='--')  # Add horizontal line at y=0 for reference
+plt.show()
+
+# #Permutation Feature Importance
+
+from sklearn.inspection import permutation_importance
+r = permutation_importance(lr, X_test, y_test_predictions, 
+                           n_repeats=30,
+                           random_state=0)
+for i in r.importances_mean.argsort()[::-1]:
+    if r.importances_mean[i] - 2 * r.importances_std[i] > 0:
+        print(f"{X_test.columns[i]:<7}"
+              f"{r.importances_mean[i]:.3f}"
+              f" +/- {r.importances_std[i]:.3f}")
+
+import matplotlib.pyplot as plt
+
+# Extract the feature names, mean importances, and standard deviations
+feature_names = X_test.columns
+importances_mean = r.importances_mean
+importances_std = r.importances_std
+
+# Sort the features by mean importance in descending order
+sorted_indices = importances_mean.argsort()[::-1]
+
+# Create a bar plot
+plt.figure(figsize=(5, 5))
+plt.bar(range(len(feature_names)), importances_mean[sorted_indices], yerr=importances_std[sorted_indices], align='center')
+plt.xticks(range(len(feature_names)), [feature_names[i] for i in sorted_indices], rotation=90)
+#plt.xlabel('Feature')
+plt.ylabel('Permutation Importance')
+plt.title('PFI - LR')
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.tight_layout()
+plt.show()
+
+# #Partial dependence plot (PDP)
+
+#### import numpy as np
+import matplotlib.pyplot as plt
+
+# Choose the feature of interest (e.g., 'area')
+feature_to_plot = 'area'
+
+# Generate a range of values for the feature
+feature_values = np.linspace(X_test[feature_to_plot].min(), X_test[feature_to_plot].max(), num=100)
+
+# Initialize an empty array to store the partial dependence values
+pdp_values = []
+
+# Iterate through feature values and calculate predictions
+for val in feature_values:
+    X_copy = X_test.copy()
+    X_copy[feature_to_plot] = val
+    predictions = lr.predict(X_copy)
+    # Adjust the predictions to be in 1e6 notation
+    pdp_values.append(predictions.mean() / 1e6)  # Expressed in Million
+
+# Plot the PDP with price in 1e6 notation
+plt.figure(figsize=(3, 5))
+plt.plot(feature_values, pdp_values, marker='o', linestyle='-')
+plt.title(f'PDP - LR - Area')
+plt.xlabel('Area')
+plt.ylabel('Price (Million)')  # Modify the y-axis label
+plt.grid(True)
+plt.show()
+
+# Plotting Permuation Feature Importanceimport matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+# Data from the table
+columns = ['LR', 'DT', 'RF', 'AB', 'Mean']
+index = ['area', 'quarter', 'construction_year', 'district', 'rooms', 'rented', 'balcony', 'bathroom', 'garden', 'basement', 'elevator', 'garage', 'restoration', 'Total']
+data = np.array([
+    [1.794, 1.489, 1.378, 1.287, 1.487],
+    [0.056, 0.152, 0.135, 0.062, 0.101],
+    [0.055, 0.118, 0.132, 0.017, 0.081],
+    [0.077, 0.056, 0.067, 0.013, 0.053],
+    [0.003, 0.100, 0.059, 0.003, 0.041],
+    [0.059, 0.012, 0.015, 0.000, 0.022],
+    [0.005, 0.003, 0.003, 0.000, 0.003],
+    [0.009, 0.000, 0.001, 0.000, 0.003],
+    [0.003, 0.002, 0.002, 0.000, 0.002],
+    [0.003, 0.000, 0.000, 0.000, 0.001],
+    [0.002, 0.000, 0.001, 0.000, 0.001],
+    [0.000, 0.000, 0.001, 0.000, 0.000],
+    [0.000, 0.000, 0.000, 0.000, 0.000]
+])
+# Create a DataFrame
+df = pd.DataFrame(data, columns=columns)
+df.index = index[:-1]  # Use the correct index
+
+# Plotting
+fig, ax = plt.subplots(figsize=(12, 8))
+
+# Add heatmap with 'Blues' colormap
+cax = ax.matshow(df.values, cmap='Blues', aspect='auto', vmin=0, vmax=np.max(data))
+
+
+# Display x-axis as Models and y-axis as Features
+ax.set_xticks(np.arange(len(columns)))
+ax.set_yticks(np.arange(len(df.index)))
+ax.set_xticklabels(columns)
+ax.set_yticklabels(df.index)
+
+
+# Insert numbers inside the plot
+for i in range(len(df.index)):
+    for j in range(len(columns)):
+        ax.text(j, i, f'{df.values[i, j]:.3f}', ha='center', va='center', color='black', fontsize=12)
+
+# Set title
+plt.title('Permutation Feature Importance')
+
+# Display the colorbar
+fig.colorbar(cax)
+
+plt.show()
+
+
