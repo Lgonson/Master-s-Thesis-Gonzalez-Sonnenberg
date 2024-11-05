@@ -6,8 +6,8 @@ This project aims to forecast the purchasing prices of homes in Berlin using var
 **Data Collection**
 The data for this study was sourced from:
 
-Immowelt
-Wohnungsboerse
+(*) Immowelt
+(*) Wohnungsboerse
 
 Web scraping techniques were employed to gather data on residential properties listed on these sites, focusing on houses located within Berlin.
 
