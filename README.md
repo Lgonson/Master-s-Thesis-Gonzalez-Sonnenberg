@@ -49,6 +49,6 @@ The models were evaluated on the test set, with **Random Forest** achieving the 
 
 - **Random Forest**: R² = 83.90%
 - **Decision Trees**: R² = 77,34%
-- **Random Forest**: R² = 67,50%
+- **AdaBoost**: R² = 67,50%
 - **Linear Regression**: R² = 57.56% 
 
